@@ -1,6 +1,8 @@
 import re
 from typing import Union, Optional
 import string
+from io import StringIO
+from html.parser import HTMLParser
 
 nltk_stopwords = {"i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself",
                   "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself",
@@ -86,6 +88,27 @@ def remove_stopwords(txt, stopwords: Optional[Union[set, list]] = None):
     return txt
 
 
+class HTMLStripper(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs= True
+        self.text = StringIO()
+
+    def handle_data(self, d):
+        self.text.write(d)
+
+    def get_data(self):
+        return self.text.getvalue()
+
+
+def remove_html_tags(txt: str):
+    s = HTMLStripper()
+    s.feed(txt)
+    return s.get_data()
+
+
 def remove_links(txt: str):
     """
     Remove weblinks from the text
@@ -123,6 +146,7 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     if stopwords is None:
         stopwords = nltk_stopwords
 
+    txt = remove_html_tags(txt)
     txt = remove_emails(txt)
     txt = remove_twitter(txt)
     txt = remove_links(txt)
@@ -142,21 +166,11 @@ if __name__ == '__main__':
 
     # parse args
     parser = argparse.ArgumentParser()
-    parser.add_argument('-of', '--output-file', help="Name of the output file for saving the processed text.",
+    parser.add_argument('-t', '--text', type=str, nargs='+', help="Space-separated listed of quoted docs to be cleaned",
                         required=True)
     args = vars(parser.parse_args())
 
-    # prepare ng20 data
-    ng20 = fetch_20newsgroups(data_home='data/', subset='all')
-
     # load the input data, process it, and write to the output file
-    with open(args['output_file'], 'w') as f_out:
-        for ix, doc in enumerate(ng20.data):
-            if ix + 1 > 5:
-                break
-            print(doc)
-            print('%' * 30)
-            doc_clean = kitchen_sink(doc)
-            print(kitchen_sink(doc))
-            print('#'*30)
-            f_out.write(doc_clean + "\n")
+    print(args)
+    cleaned_docs = [kitchen_sink(doc) for doc in args['text']]
+    print(cleaned_docs)
