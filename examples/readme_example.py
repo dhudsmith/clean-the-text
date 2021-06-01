@@ -1,13 +1,3 @@
-# Clean the Text!
-
-# Installation
-In a terminal, run
-```shell
-pip install --upgrade git+https://github.com/dhudsmith/clean-the-text
-```
-
-In python, 
-```python
 from ctt import clean
 
 dirty_text = """
@@ -30,4 +20,3 @@ baz
 clean_text = clean.kitchen_sink(dirty_text)
 
 print(clean_text)
-```

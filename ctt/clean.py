@@ -113,10 +113,8 @@ def remove_links(txt: str):
     """
     Remove weblinks from the text
     """
-    txt = re.sub(r'http\S+', '', txt)  # remove http links
-    txt = re.sub(r'bit.ly/\S+', '', txt)  # rempve bitly links
-    txt = re.sub(r"[a-zA-Z0-9+_.-]+.edu", "", txt)  # remove .edu links
-    txt = txt.strip('[link]')  # remove [links]
+    pattern = r'[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
+    txt = re.sub(pattern, "", txt)
 
     return txt
 
@@ -147,9 +145,9 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
         stopwords = nltk_stopwords
 
     txt = remove_html_tags(txt)
+    txt = remove_links(txt)
     txt = remove_emails(txt)
     txt = remove_twitter(txt)
-    txt = remove_links(txt)
     txt = expand_contractions(txt)
     txt = remove_utf8(txt)
     txt = clean_misc(txt)
