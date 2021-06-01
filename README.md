@@ -6,6 +6,7 @@ In a terminal, run
 pip install --upgrade git+https://github.com/dhudsmith/clean-the-text
 ```
 
+# Usage
 In python, 
 ```python
 from ctt import clean
@@ -25,9 +26,8 @@ baz
 </div>
 """
 
-# dirty_text = "www.paypal.com"
-
 clean_text = clean.kitchen_sink(dirty_text)
 
 print(clean_text)
+# >> "subject owe body dear foo need remind owe gil accept payment via bitcoin course sincerely baz"
 ```
