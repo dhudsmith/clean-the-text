@@ -59,12 +59,6 @@ def clean_misc(txt: str):
     return txt
 
 
-def clean_funny_unicode(txt: str):
-    chars = r'’|ー|'
-    txt = re.sub()
-    return txt
-
-
 def remove_punct(txt: str):
     """
     Remove all punctuation
@@ -113,7 +107,8 @@ def remove_links(txt: str):
     Remove weblinks from the text
     """
     pattern = r'[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
-    txt = re.sub(pattern, "", txt)
+    txt = re.sub(pattern, " ", txt)
+    txt = re.sub('http|https', " ", txt)
 
     return txt
 
@@ -149,10 +144,8 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     txt = remove_twitter(txt)
     txt = expand_contractions(txt)
     txt = clean_misc(txt)
-    txt = clean_funny_unicode(txt)
     txt = remove_punct(txt)
     txt = txt.lower()
-    txt = remove_extra_whitespace(txt)
     txt = remove_stopwords(txt, stopwords)
 
     return txt
