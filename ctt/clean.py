@@ -1,4 +1,4 @@
-import re
+import regex as re
 from typing import Union, Optional
 import string
 from io import StringIO
@@ -27,6 +27,8 @@ def expand_contractions(txt: str):
     txt = re.sub(r"Won\'t", "Will not", txt)
     txt = re.sub(r"can\'t", "can not", txt)
     txt = re.sub(r"Can\'t", "Can not", txt)
+    txt = re.sub(r"cant", "can not", txt)
+    txt = re.sub(r"wont", "will not", txt)
 
     # general
     txt = re.sub(r"n\'t", " not", txt)
@@ -38,27 +40,17 @@ def expand_contractions(txt: str):
     txt = re.sub(r"\'t", " not", txt)
     txt = re.sub(r"\'ve", " have", txt)
     txt = re.sub(r"\'m", " am", txt)
-    return txt
-
-
-# Remove stray utf8
-def remove_utf8(txt: str):
-    """
-    Remove stray utf symbols from encoding/decoding errors
-    """
-    patt = r'\\x[a-zA-Z0-9]{2}'
-    txt = re.sub(patt, ' ', txt)
 
     return txt
 
 
 def clean_misc(txt: str):
     """
-    Convert ellipses into "<ellipses>", ampersands into "and",
-    percantage signs into "<percent>", dollars into "<dollars>",
-    and numbers into "<number>".
+    Handle a funny unicode symbols and stray
+    garbage from encoding/decoding
     """
-    txt = re.sub(r'\.\.\.', '', txt)
+    txt = re.sub(r'\\x[a-zA-Z0-9]{2}', ' ', txt)  # stray \x.. utf-8 symbols
+    txt = re.sub(r'\.\.\.', '', txt)  # 3 dot ellipses
     txt = re.sub(r"â€¦", '', txt)
     txt = re.sub(r"&amp", "and", txt)
     txt = re.sub(re.compile('(\d+(\.\d+)?%)'), '', txt)
@@ -67,15 +59,22 @@ def clean_misc(txt: str):
     return txt
 
 
+def clean_funny_unicode(txt: str):
+    chars = r'’|ー|'
+    txt = re.sub()
+    return txt
+
+
 def remove_punct(txt: str):
     """
     Remove all punctuation
     """
-    txt = txt.translate(str.maketrans('', '', string.punctuation))
-    txt = re.sub('\n', ' ', txt)  # remove newline characters
+    txt = re.sub(r"\p{P}+", " ", txt)  # remove/pad all punct
+    txt = re.sub('\n', ' ', txt)  # remove/pad newline characters
+    txt = re.sub('ー|…|’|–|–', ' ', txt)  # remove/pad funny unicode
+    txt = re.sub(r'\s+', ' ', txt)  # remove extra whitespace
 
     return txt
-
 
 def remove_stopwords(txt, stopwords: Optional[Union[set, list]] = None):
     """
@@ -149,10 +148,11 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     txt = remove_emails(txt)
     txt = remove_twitter(txt)
     txt = expand_contractions(txt)
-    txt = remove_utf8(txt)
     txt = clean_misc(txt)
+    txt = clean_funny_unicode(txt)
     txt = remove_punct(txt)
     txt = txt.lower()
+    txt = remove_extra_whitespace(txt)
     txt = remove_stopwords(txt, stopwords)
 
     return txt
@@ -160,7 +160,6 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
 
 if __name__ == '__main__':
     import argparse
-    from sklearn.datasets import fetch_20newsgroups
 
     # parse args
     parser = argparse.ArgumentParser()
