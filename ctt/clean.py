@@ -1,8 +1,9 @@
 import regex as re
 from typing import Union, Optional
-import string
 from io import StringIO
 from html.parser import HTMLParser
+from emoji import UNICODE_EMOJI
+
 
 nltk_stopwords = {"i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself",
                   "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself",
@@ -81,6 +82,13 @@ def remove_stopwords(txt, stopwords: Optional[Union[set, list]] = None):
     return txt
 
 
+def pad_emoji(txt):
+    """
+    Adds whitespace around emoji to separate from words
+    """
+    return ''.join(' ' + char if char in UNICODE_EMOJI else char for char in txt).strip()
+
+
 class HTMLStripper(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -145,6 +153,7 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     txt = expand_contractions(txt)
     txt = clean_misc(txt)
     txt = remove_punct(txt)
+    txt = pad_emoji(txt)
     txt = txt.lower()
     txt = remove_stopwords(txt, stopwords)
 
