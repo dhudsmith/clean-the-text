@@ -129,15 +129,6 @@ def remove_emails(txt: str):
     return txt
 
 
-def remove_twitter(txt: str):
-    """
-    Removes @user and RT @usr
-    """
-    txt = re.sub(r"(RT\s@[A-Za-z]+[A-Za-z0-9-_]+)", '', txt)  # remove retweet
-    txt = re.sub(r"(@[A-Za-z]+[A-Za-z0-9-_]+)", '', txt)  # remove tweeted at
-    return txt
-
-
 # Combined processing function
 def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     """
@@ -149,7 +140,6 @@ def kitchen_sink(txt: str, stopwords: Optional[Union[set, list]] = None):
     txt = remove_html_tags(txt)
     txt = remove_links(txt)
     txt = remove_emails(txt)
-    txt = remove_twitter(txt)
     txt = expand_contractions(txt)
     txt = clean_misc(txt)
     txt = remove_punct(txt)
