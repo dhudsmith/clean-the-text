@@ -7,8 +7,9 @@ pip install --upgrade git+https://github.com/dhudsmith/clean-the-text
 ```
 If that doesn't work, try
 ```shell
-git clone git@github.com:dhudsmith/clean-the-text.git
-cd clean-the-text/
+wget https://github.com/dhudsmith/clean-the-text/archive/refs/heads/master.zip
+unzip master.zip
+cd clean-the-text-master
 pip install .
 ```
 
