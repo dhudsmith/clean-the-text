@@ -86,7 +86,7 @@ def pad_emoji(txt):
     """
     Adds whitespace around emoji to separate from words
     """
-    return ''.join(f' {char} ' if char in UNICODE_EMOJI['en'] else char for char in txt).strip()
+    return ''.join(f' {char} ' if char in UNICODE_EMOJI else char for char in txt).strip()
 
 
 class HTMLStripper(HTMLParser):
